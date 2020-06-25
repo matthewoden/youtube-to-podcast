@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# All made possible thanks to FFMPEG and youtube downloader.
+#
+# Just run: 
+# brew install ffmpeg youtube-dl
+#
+# youtube downloader options: https://github.com/ytdl-org/youtube-dl
+
+
+# Fetch the file at the best audio format available.
+youtube-dl --no-mtime -f 'bestaudio' -o '%(title)s.%(ext)s' $1
+
+# Rather than fuss with the output, just grab the file based
+# on the most recently created file in the current directory.
+# (script assumes it's run in the output directory.)
+last_modified_file=`ls -tp | head -n1`
+
+# Grab the filename, sans extension. 
+filename="${last_modified_file%.*}"
+
+# Convert file to mp3.
+ffmpeg -i "$last_modified_file" -vn -ab 128k -ar 44100 -y "${filename}.mp3"
